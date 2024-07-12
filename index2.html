@@ -43,7 +43,7 @@
         let rocks = {};
         let activeRocks = [];
         let initialCameraPosition = { x: -8, y: 6, z: -21 };
-        let targetCameraPosition = { x: 12, y: 6, z: -12 };
+        let targetCameraPosition = { x: 12, y: 6, z: -19 };
         
         function init() {
             scene = new THREE.Scene();
@@ -97,7 +97,7 @@
             // Load and add the second GLTF model
             loader.load('circles.glb', function (gltf) {
                 circleModel = gltf.scene;
-                circleModel.position.set(-5, 0, 0); // Move the stones to the left
+                circleModel.position.set(15, 0, 0); // Move the stones to the left
                 scene.add(circleModel);
 
                 // Hide all rocks initially
