@@ -63,7 +63,7 @@ function init() {
   // Load and add the GLTF model
   const loader = new THREE.GLTFLoader();
   loader.load(
-    "original_golem_material.glb",
+    "https://github.com/User22807/Sketches/raw/main/original_golem_material.glb",
     function (gltf) {
       model = gltf.scene;
       model.position.set(3, 0, 0); // Move the character to the right to avoid overlap
@@ -84,7 +84,7 @@ function init() {
 
   // Load and add the second GLTF model
   loader.load(
-    "circles.glb",
+    "https://github.com/User22807/Sketches/raw/main/circles.glb",
     function (gltf) {
       circleModel = gltf.scene;
       circleModel.position.set(18, 0, 0); // Move the stones to the left
