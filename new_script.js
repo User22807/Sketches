@@ -17,7 +17,7 @@ let dampingFactor = 0.1; // Damping factor for smooth rotation
 let rocks = {};
 let activeRocks = [];
 let initialCameraPosition = { x: -8, y: 6, z: -21 };
-let targetCameraPosition = { x: 12, y: 6, z: -18 };
+let targetCameraPosition = { x: 12, y: 6, z: -12 };
 
 function init() {
   scene = new THREE.Scene();
@@ -63,7 +63,7 @@ function init() {
   // Load and add the GLTF model
   const loader = new THREE.GLTFLoader();
   loader.load(
-    "https://cdn.jsdelivr.net/gh/User22807/Sketches@raw/main/original_golem_material.glb",
+    "original_golem_material.glb",
     function (gltf) {
       model = gltf.scene;
       model.position.set(3, 0, 0); // Move the character to the right to avoid overlap
@@ -84,10 +84,10 @@ function init() {
 
   // Load and add the second GLTF model
   loader.load(
-    "https://cdn.jsdelivr.net/gh/User22807/Sketches@raw/main/circles.glb",
+    "circles.glb",
     function (gltf) {
       circleModel = gltf.scene;
-      circleModel.position.set(18, 0, 0); // Move the stones to the left
+      circleModel.position.set(-5, 0, 0); // Move the stones to the left
       scene.add(circleModel);
 
       // Hide all rocks initially
@@ -138,56 +138,56 @@ function init() {
       asciiSize: { value: asciiSize },
     },
     vertexShader: `
-                    varying vec2 vUv;
-                    void main() {
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
     fragmentShader: `
-                    uniform sampler2D tDiffuse;
-                    uniform vec2 iResolution;
-                    uniform float asciiSize;
+            uniform sampler2D tDiffuse;
+            uniform vec2 iResolution;
+            uniform float asciiSize;
 
-                    float character(int n, vec2 p) {
-                        p = floor(p * vec2(-4.0, 4.0) + 2.5);
-                        if (clamp(p.x, 0.0, 4.0) == p.x) {
-                            if (clamp(p.y, 0.0, 4.0) == p.y) {
-                                int a = int(round(p.x) + 5.0 * round(p.y));
-                                if (((n >> a) & 1) == 1) return 1.0;
-                            }
-                        }
-                        return 0.0;
+            float character(int n, vec2 p) {
+                p = floor(p * vec2(-4.0, 4.0) + 2.5);
+                if (clamp(p.x, 0.0, 4.0) == p.x) {
+                    if (clamp(p.y, 0.0, 4.0) == p.y) {
+                        int a = int(round(p.x) + 5.0 * round(p.y));
+                        if (((n >> a) & 1) == 1) return 1.0;
                     }
+                }
+                return 0.0;
+            }
 
-                    void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-                        vec2 pix = fragCoord.xy;
-                        vec3 col = texture2D(tDiffuse, floor(pix / asciiSize) * asciiSize / iResolution.xy).rgb;
+            void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+                vec2 pix = fragCoord.xy;
+                vec3 col = texture2D(tDiffuse, floor(pix / asciiSize) * asciiSize / iResolution.xy).rgb;
 
-                        float gray = 0.3 * col.r + 0.59 * col.g + 0.11 * col.b;
+                float gray = 0.3 * col.r + 0.59 * col.g + 0.11 * col.b;
 
-                        int n = 4096;
+                int n = 4096;
 
-                        if (gray > 0.2) n = 65600;
-                        if (gray > 0.3) n = 163153;
-                        if (gray > 0.4) n = 15255086;
-                        if (gray > 0.5) n = 13121101;
-                        if (gray > 0.6) n = 15252014;
-                        if (gray > 0.7) n = 13195790;
-                        if (gray > 0.8) n = 11512810;
+                if (gray > 0.2) n = 65600;
+                if (gray > 0.3) n = 163153;
+                if (gray > 0.4) n = 15255086;
+                if (gray > 0.5) n = 13121101;
+                if (gray > 0.6) n = 15252014;
+                if (gray > 0.7) n = 13195790;
+                if (gray > 0.8) n = 11512810;
 
-                        vec2 p = mod(pix / 4.0, 2.0) - vec2(1.0);
+                vec2 p = mod(pix / 4.0, 2.0) - vec2(1.0);
 
-                        col = col * character(n, p);
+                col = col * character(n, p);
 
-                        fragColor = vec4(col, 1.0);
-                    }
+                fragColor = vec4(col, 1.0);
+            }
 
-                    varying vec2 vUv;
-                    void main() {
-                        mainImage(gl_FragColor, vUv * iResolution);
-                    }
-                `,
+            varying vec2 vUv;
+            void main() {
+                mainImage(gl_FragColor, vUv * iResolution);
+            }
+        `,
   });
   asciiPass.renderToScreen = true;
   effectComposer.addPass(asciiPass);
